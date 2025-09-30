@@ -377,3 +377,60 @@ class Cylinder(Shape):
                 return Intercept(hit_point, normal, t_top, texCoords, dir, self)
 
         return None
+
+class Ellipsoid(Shape):
+    def __init__(self, position, radii, material):
+        super().__init__(position, material)
+        self.radii = np.array(radii, dtype=float)
+        self.type = "Ellipsoid"
+
+    def ray_intersect(self, orig, dir):
+        orig = np.array(orig, dtype=float)
+        dir = np.array(dir, dtype=float)
+
+        dir_length = np.linalg.norm(dir)
+        if dir_length == 0:
+            return None
+        dir = dir / dir_length
+
+        # Centro del elipsoide
+        center = np.array(self.position)
+
+        # Vector desde centro a origen
+        oc = orig - center
+
+        # Coeficientes para la ecuación cuadrática
+        rx, ry, rz = self.radii
+        A = (dir[0]/rx)**2 + (dir[1]/ry)**2 + (dir[2]/rz)**2
+        B = 2 * ((oc[0]*dir[0])/rx**2 + (oc[1]*dir[1])/ry**2 + (oc[2]*dir[2])/rz**2)
+        C = (oc[0]/rx)**2 + (oc[1]/ry)**2 + (oc[2]/rz)**2 - 1
+
+        discriminant = B**2 - 4*A*C
+        if discriminant < 0:
+            return None
+
+        sqrt_d = np.sqrt(discriminant)
+        t1 = (-B - sqrt_d) / (2*A)
+        t2 = (-B + sqrt_d) / (2*A)
+
+        hits = []
+        for t in [t1, t2]:
+            if t > 1e-6:
+                hit_point = orig + dir * t
+                # Normal: grad = [2*(x-cx)/rx^2, 2*(y-cy)/ry^2, 2*(z-cz)/rz^2]
+                normal = np.array([
+                    2 * (hit_point[0] - center[0]) / rx**2,
+                    2 * (hit_point[1] - center[1]) / ry**2,
+                    2 * (hit_point[2] - center[2]) / rz**2
+                ])
+                normal = normal / np.linalg.norm(normal)
+                u = -np.arctan2(normal[2], normal[0]) / (2 * np.pi) + 0.5
+                v = np.arccos(np.clip(-normal[1], -1, 1)) / np.pi
+                texCoords = (u, v)
+                hits.append(Intercept(hit_point, normal, t, texCoords, dir, self))
+
+        if hits:
+            return min(hits, key=lambda h: h.distance)
+        return None
+
+

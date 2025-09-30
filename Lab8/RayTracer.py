@@ -12,7 +12,7 @@ screen = pygame.display.set_mode((width, height), pygame.SCALED)
 clock = pygame.time.Clock()
 
 rend = Renderer(screen)
-rend.envMap = BMPTexture("textures/goegap_road_4k.bmp")
+#rend.envMap = BMPTexture("textures/goegap_road_4k.bmp")
 
 brick = Material(diffuse = [1,0,0], spec = 16, ks = 0.5)
 grass = Material(diffuse = [0,1,0], spec = 32, ks = 0.4)
@@ -29,6 +29,9 @@ whiteCeiling = Material(diffuse=[0.9, 0.9, 0.9], spec=10, ks=0.1)
 beigeFloor = Material(diffuse=[0.8, 0.8, 0.7], spec=20, ks=0.2)
 lightGrayWall = Material(diffuse=[0.8, 0.8, 0.8], spec=12, ks=0.15)
 
+# Material Reflectivo con textura 1K
+steel_reflective = Material(diffuse=[0.9, 0.9, 0.9], spec=128, ks=0.5, texture=BMPTexture("textures/Poliigon_MetalSteelBrushed_7174_BaseColor.bmp"), matType=REFLECTIVE)
+
 # Material Reflectivo
 mirror = Material(diffuse = [0.9, 0.9, 0.9], spec = 128, ks = 0.5, matType = REFLECTIVE)
 blueMirror = Material(diffuse = [0, 0, 0.9], spec = 64, ks = 0.2, matType = REFLECTIVE)
@@ -39,11 +42,16 @@ blueMirror = Material(diffuse = [0, 0, 0.9], spec = 64, ks = 0.2, matType = REFL
 #quartzite = Material(diffuse = [0.9, 0.9, 0.9], spec = 128, ks = 0.5, texture = BMPTexture("textures/Poliigon_StoneQuartzite_8060_BaseColor.bmp"), matType = REFLECTIVE)
 #Metalgold = Material(diffuse=[1, 0.8, 0], spec=256, ks=0.8, texture=BMPTexture("textures/Poliigon_MetalGoldPaint_7253_BaseColor.bmp"), matType=REFLECTIVE)
 #Metalblack = Material(diffuse=[0.9, 0.9, 0.9], spec=512, ks=0.6, texture=BMPTexture("textures/Poliigon_MetalPaintedMatte_7037_BaseColor.bmp"), matType=REFLECTIVE)
-#redFabric = Material(diffuse=[1, 0.2, 0.2], spec=128, ks=0.7, texture=BMPTexture("textures/textura-de-tela-tenido-anudado-degradado-colorido.bmp"), matType=REFLECTIVE)
+redFabric = Material(diffuse=[1, 0.2, 0.2], spec=128, ks=0.7, texture=BMPTexture("textures/textura-de-tela-tenido-anudado-degradado-colorido.bmp"), matType=REFLECTIVE)
+
+# Material Reflectivo con textura 1K
+steel_reflective = Material(diffuse=[0.9, 0.9, 0.9], spec=128, ks=0.5, texture=BMPTexture("textures/Poliigon_MetalSteelBrushed_7174_BaseColor.bmp"), matType=REFLECTIVE)
+
 
 # Material Transparente
 glass = Material(ior = 1.5, matType=TRANSPARENT)
-diamond = Material(ior = 2.0, matType=TRANSPARENT)
+diamond_gren = Material(ior = 2.0, diffuse=[0, 1, 0], matType=TRANSPARENT)
+quartz = Material(ior=1.8, matType=TRANSPARENT)
 #water = Material(ior = 1.33, texture = BMPTexture("textures/1636.bmp"), diffuse=[1, 1, 1], spec=128, ks=0.5, matType = TRANSPARENT)
 
 
@@ -62,9 +70,17 @@ diamond = Material(ior = 2.0, matType=TRANSPARENT)
 # Cubo 2
 # rend.scene.append(AABB(position=[1.5, -0.5, -5], sizes=[0.75, 0.75, 0.75], material=grass))
 
-# Ellipsoid en la posición del triángulo
-#rend.scene.append(Ellipsoid(position=[0, 0, -5], radii=[0.6, 0.4, 0.4], material=brick))
-rend.scene.append(Cylinder(position=[0, 0, -5], radius=0.7, height=1.2, material=brick))
+
+rend.scene.append(Ellipsoid(position=[-1.5, 0.9, -5], radii=[0.5, 0.25, 0.25], material=quartz))
+rend.scene.append(Cylinder(position=[-1.5, -0.9, -5], radius=0.3, height=1.5, material=steel_reflective))
+
+rend.scene.append(Ellipsoid(position=[0, 1.45, -5], radii=[0.4, 0.2, 0.2], material=redFabric))
+rend.scene.append(Cylinder(position=[0, -0.88, -5], radius=0.4, height=2.0, material=fire))
+
+# Cilindro grande a la derecha
+rend.scene.append(Ellipsoid(position=[1.5, 1.8, -5], radii=[0.3, 0.15, 0.15], material=sun))
+rend.scene.append(Cylinder(position=[1.5, -0.9, -5], radius=0.5, height=2.5, material=diamond_gren))
+
 
 # Disco
 rend.scene.append(Disk(position=[0, -1, -5], normal=[0, 1, 0], radius=2, material=mirror))
